@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block nav %}
+          <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li><a class="nav-link current" href="/">Home</a></li>
+              <li><a class="nav-link" href="/about">About the Team</a></li>
+            </ul>
+          </div>
+{% endblock %}
+
+{% block docs-header %}
+<!--docs-header-->
+<div class="topic">
+	<div class="container">
+		<div class="col-md-8">
+		  <h3>Meet your Match.</h3>
+		  <h4>Match your prescribing habits to those of top physicians to ensure you're always prescribing with integrity.</h4>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascript_block %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"/></script> 
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script src="/static/app_hcare/meds.js"></script>
+
+
+
+	<style>
+		.ui-autocomplete { height: 200px; overflow-y: scroll; overflow-x: hidden; background:rgba(255, 255, 255,.95);}
+		.ui-state-focus
+		{
+		    color:White;
+		    background:rgba(128, 128, 128,.5);
+		    outline:none;
+		}
+	</style>
+
+			<script>
+
+				$(document).ready(function() 
+				{
+	
+				$( "#medname" ).autocomplete({
+				  source: available_meds
+				});
+
+				
+				$( "#medid" ).autocomplete({
+				 source: available_med_ids
+				});
+
+				$( "#condition_id" ).autocomplete({
+				 source: available_conditions
+				});
+
+				$( "#med_id_for_condition" ).autocomplete({
+				 source: available_med_ids_corr
+				});
+			
+				$('#myForm').submit(function(e){
+					$.ajax({
+								 type:"POST",
+								 url: "process_data",
+								 data : $("#myForm").serialize(),
+								 success: function(the_response){
+
+									 $('#write_response').html(the_response)
+								 }
+					})
+					$('#medid').val('')
+					$('#medname').val('')
+					$('#dosage').val('')
+					$('#write_response_corr').html('')
+					e.preventDefault();
+				}
+
+				)
+
+
+
+				$('#myForm_corr').submit(function(e){
+					$.ajax({
+								 type:"POST",
+								 url: "process_data_corr",
+								 data : $("#myForm_corr").serialize(),
+								 success: function(the_response){
+
+									 $('#write_response_corr').html(the_response)
+								 }
+					})
+					$('#condition_id').val('')
+					$('#med_id_for_condition').val('')
+					$('#write_response').html('')
+					e.preventDefault();
+				}
+
+				)
+
+
+
+
+			})
+			</script>
+{% endblock %}
+{% block document_body %}
+	<!-- Document block is in here  -->
+	<div class="row">
+		<div class="col-md-12">
+		<!-- Overview  ================================================== -->
+			<div class="docs-article docs--start" id="overview">
+				<h3>We are here to reduce medical errors that may occur when writing prescriptions.</h3>
+				<p>Why is this important?</p>
+				<dl>
+				<dt>Prescribing Faults &amp; Errors</dt>
+				<dd>According to this article by <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2723200/">The National Center for Biotechnology Information</a>, "Medication errors are common in general practice and in hospitals. Both errors in the act of writing (prescription errors) and prescribing faults due to erroneous medical decisions can result in harm to patients."</dd>
+				<dt>Prevalence</dt>
+				<dd>Prescription errors account for 70% of medication errors that could potentially result in adverse effects. A mean value of prescribing errors with the potential for adverse effects in patients of about 4 in 1000 prescriptions was recorded in a teaching hospital.</dd>
+				<dt>Solution</dt>
+				<dd>Active interventions aimed at reducing prescription errors and prescribing faults are strongly recommended. These should be focused on the education and training of prescribers and the use of on-line aids. </dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+	  <!-- ================================================== -->
+	  <div class="docs-article docs--start" id="download">
+		<h3>Try Out the Checker</h3>
+		<p>Test out the latest release of our Prescription Checker</p>
+		<ul class="item__infos">
+		  <li>Version 1.0</li>
+		  <li>Released November 31st, 2015</li>
+		</ul>
+	</div>
+
+				
+
+	<div class="example">
+        <div class="row">
+          <div class="col-md-12">
+            <h2 class="example-title">Enter Your Prescription Name</h2>
+            <div class="row">
+              <div class="col-md-6">	
+			<!-- Python intergration goes here -->		
+			<!-- ============================= -->
+			<!-- ============================= -->
+			<!-- ============================= -->
+				<form id="myForm" method="post">
+
+					<label> Medication Name: </label>
+						<input type="text" class="form-control" placeholder="Enter a medication name" name="med_name" id="medname"> 
+						<br>
+					<label> Medication ID: </label>
+						<input type="text" class="form-control" placeholder="Enter a medication ID" name="med_id" id="medid">
+						<br>
+                    <label> Dosage: </label>
+                    	<input type="text" class="form-control" placeholder="Enter a dosage value" name="dosage" id="dosage">
+                    	<br> 
+					<input type="submit" value="Submit">
+				</form>
+				
+				<div id="write_response"></div>
+              </div>
+            </div>			
+			<!-- ============================= -->
+			<!-- ============================= -->	
+
+
+
+
+			<h2 class="example-title">Enter Your Condition Id and Proposed Medication Id</h2>
+            <div class="row">
+              <div class="col-md-6">	
+			<!-- Python intergration goes here -->		
+			<!-- ============================= -->
+			<!-- ============================= -->
+			<!-- ============================= -->
+				<form id="myForm_corr" method="post">
+
+					<label> Condition Id: </label>
+						<input type="text" class="form-control" placeholder="Enter a condition id" name="condition_id" id="condition_id"> 
+						<br>
+					<label> Medication ID: </label>
+						<input type="text" class="form-control" placeholder="Enter a medication ID" name="med_id_for_condition" id="med_id_for_condition">
+						<br>
+					<input type="submit" value="Submit">
+				</form>
+				
+				<div id="write_response_corr"></div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+          <br>
+          <br>
+  
+          <!-- How?
+          ================================================== -->
+          <div class="docs-article docs--start">
+            <h3>How do we get this data? </h3>
+            <p>This project sources data from the Georgia Tech FHIR database set up for the CS 6440 class. From the read only server, data is pulled from the resources of Condition, Medication, and MedicationPrescription. From the Condition resources, we pull patient reference ids and condition codes. These are used to build dictionaries of all conditions present for a patient. From the Medication resources, we pull medication reference ids, medication names, and medication codes. These are used to resolve ids and codes during other data processing steps. From the MedicationPrescription resources, we pull patient reference ids, medication reference ids, and dosage values. These are used to build dictionaries of all medications present for a patient, and all prescribed dosage values for a medication. This data is then processed and used in two ways. The idea being that this system is not officially trained in medicine, yet with enough input data, it can identify patterns that are common in the data set. First, by iterating through all patient conditions and all patient medications, we attempt to correlate the presence of a particular medication with the presence of a particular condition. Although a patient may have many conditions and many medications, enough patients with enough other conditions and enough other medications will permit the correlations to be exposed. For a given medication, we also use the entire pool of prescriptions to resolve the mean and standard deviation in order to sanity check a particular prescription dosage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+	{% endblock %}   
